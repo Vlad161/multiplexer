@@ -1,0 +1,10 @@
+POST {{ multiplexer }}/multiplexer
+Content-Type: application/json
+
+[
+  "http://jsonplaceholder.typicode.com/posts/1",
+  "http://jsonplaceholder.typicode.com/posts/2",
+  "http://jsonplaceholder.typicode.com/posts/3",
+  "http://jsonplaceholder.typicode.com/posts/4",
+  "http://jsonplaceholder.typicode.com/posts/5"
+]
