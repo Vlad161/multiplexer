@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/vlad161/affise_test_task/internal/logger"
 	"net/http"
+
+	"github.com/vlad161/affise_test_task/internal/logger"
 )
 
 type service struct {
@@ -45,7 +46,7 @@ func (s service) Get(ctx context.Context, url string) (map[string]interface{}, e
 	}
 	defer func() {
 		if errCloseBody := resp.Body.Close(); errCloseBody != nil {
-			log.Error("can't close response body: %w", errCloseBody)
+			log.Error("can't close response body: %v", errCloseBody)
 		}
 	}()
 

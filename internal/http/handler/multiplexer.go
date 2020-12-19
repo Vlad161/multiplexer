@@ -39,7 +39,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	resp, errHandle := h.handle(ctx, r.Body)
 	defer func() {
 		if errCloseBody := r.Body.Close(); errCloseBody != nil {
-			log.Error("can't close request body: %w", errCloseBody)
+			log.Error("can't close request body: %v", errCloseBody)
 		}
 	}()
 	if errHandle == nil {
@@ -90,10 +90,10 @@ func (h handler) handlerError(log logger.Logger, err error, w http.ResponseWrite
 		code = http.StatusInternalServerError
 		message = http.StatusText(http.StatusInternalServerError)
 	}
-	log.Error("handle error: %w", err)
+	log.Error("handle error: %v", err)
 
 	w.WriteHeader(code)
 	if _, errWrite := w.Write([]byte(message)); errWrite != nil {
-		log.Error("can't write handler error body %w", errWrite)
+		log.Error("can't write handler error body %v", errWrite)
 	}
 }
