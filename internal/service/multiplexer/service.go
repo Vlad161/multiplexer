@@ -67,11 +67,11 @@ func (s service) visitUrls(ctx context.Context, urls []string, done <-chan struc
 	sem := make(chan struct{}, semaphoreMaxGoroutines)
 	kvChan := make(chan keyValue)
 	errChan := make(chan error)
-	terminate := false
+	terminate := safeBool{}
 
 	go func() {
 		<-done
-		terminate = true
+		terminate.set(true)
 	}()
 
 	go func() {
@@ -84,7 +84,7 @@ func (s service) visitUrls(ctx context.Context, urls []string, done <-chan struc
 				r, errDo := s.client.Get(ctx, url)
 
 				// Ignore result if terminate required
-				if !terminate {
+				if !terminate.get() {
 					if errDo != nil {
 						errChan <- errDo
 					} else {
@@ -97,7 +97,7 @@ func (s service) visitUrls(ctx context.Context, urls []string, done <-chan struc
 			}(u)
 
 			// Abort if terminate required
-			if terminate {
+			if terminate.get() {
 				return
 			}
 		}
