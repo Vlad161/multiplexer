@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/vlad161/affise_test_task/internal/service/multiplexer"
+	"github.com/vlad161/multiplexer/internal/service/multiplexer"
 )
 
 type Multiplexer interface {

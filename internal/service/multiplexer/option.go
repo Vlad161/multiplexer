@@ -1,6 +1,6 @@
 package multiplexer
 
-import "github.com/vlad161/affise_test_task/internal/service/client"
+import "github.com/vlad161/multiplexer/internal/service/client"
 
 type Option func(*service) error
 

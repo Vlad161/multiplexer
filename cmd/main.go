@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/vlad161/affise_test_task/internal/http/handler"
-	"github.com/vlad161/affise_test_task/internal/http/middleware"
-	"github.com/vlad161/affise_test_task/internal/logger"
-	"github.com/vlad161/affise_test_task/internal/service/multiplexer"
+	"github.com/vlad161/multiplexer/internal/http/handler"
+	"github.com/vlad161/multiplexer/internal/http/middleware"
+	"github.com/vlad161/multiplexer/internal/logger"
+	"github.com/vlad161/multiplexer/internal/service/multiplexer"
 )
 
 const (

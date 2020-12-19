@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/vlad161/affise_test_task/internal/logger"
+	"github.com/vlad161/multiplexer/internal/logger"
 )
 
 func Logger(log logger.Logger, handler http.Handler) http.Handler {
