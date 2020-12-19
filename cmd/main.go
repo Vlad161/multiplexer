@@ -40,6 +40,7 @@ func main() {
 	s.Handler = middleware.Logger(log, s.Handler)
 
 	go func() {
+		log.Info("Server is started, port: %s", s.Addr)
 		if errListen := s.ListenAndServe(); errListen != nil && errListen != http.ErrServerClosed {
 			log.Fatal("can't listen and serve: %v", errListen)
 		}

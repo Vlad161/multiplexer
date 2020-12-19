@@ -18,3 +18,7 @@ test:
 .PHONY: generate
 generate:
 	@go generate ./...
+
+.PHONY: run
+run:
+	@go run cmd/main.go
