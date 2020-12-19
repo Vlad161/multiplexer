@@ -10,7 +10,10 @@ import (
 	"github.com/vlad161/affise_test_task/internal/service/multiplexer"
 )
 
-const PORT = 8081
+const (
+	port                 = 8081
+	multiplexerRateLimit = 100
+)
 
 func main() {
 	log := logger.New()
@@ -21,10 +24,10 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/multiplexer", handler.NewMultiplexer(mp))
+	mux.Handle("/multiplexer", middleware.RateLimiter(multiplexerRateLimit, handler.NewMultiplexer(mp)))
 
 	s := http.Server{
-		Addr:           fmt.Sprintf(":%d", PORT),
+		Addr:           fmt.Sprintf(":%d", port),
 		Handler:        mux,
 		MaxHeaderBytes: http.DefaultMaxHeaderBytes,
 	}

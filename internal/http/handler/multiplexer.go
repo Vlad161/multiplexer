@@ -29,7 +29,6 @@ func NewMultiplexer(multiplexer Multiplexer) *handler {
 }
 
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	if !h.validate(w, r) {
 		return
 	}
@@ -55,7 +54,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h handler) validate(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusNotFound)
+		http.NotFound(w, r)
 		return false
 	}
 	return true
@@ -90,10 +89,7 @@ func (h handler) handlerError(log logger.Logger, err error, w http.ResponseWrite
 		code = http.StatusInternalServerError
 		message = http.StatusText(http.StatusInternalServerError)
 	}
-	log.Error("handle error: %v", err)
 
-	w.WriteHeader(code)
-	if _, errWrite := w.Write([]byte(message)); errWrite != nil {
-		log.Error("can't write handler error body %v", errWrite)
-	}
+	log.Error("handle error: %v", err)
+	http.Error(w, message, code)
 }
