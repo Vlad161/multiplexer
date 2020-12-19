@@ -49,7 +49,8 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.handlerError(log, errHandle, w)
+	h.handlerError(errHandle, w)
+	return
 }
 
 func (h handler) validate(w http.ResponseWriter, r *http.Request) bool {
@@ -65,6 +66,9 @@ func (h handler) handle(ctx context.Context, body io.ReadCloser) (response, erro
 	if errDecode := json.NewDecoder(body).Decode(&urls); errDecode != nil {
 		return nil, fmt.Errorf("%w: %v", ErrDecodeBody, errDecode)
 	}
+	if len(urls) == 0 {
+		return nil, ErrEmptyUrls
+	}
 	if len(urls) > maxUrlsSize {
 		return nil, ErrTooMuchUrls
 	}
@@ -72,7 +76,7 @@ func (h handler) handle(ctx context.Context, body io.ReadCloser) (response, erro
 	return h.multiplexer.Urls(ctx, urls)
 }
 
-func (h handler) handlerError(log logger.Logger, err error, w http.ResponseWriter) {
+func (h handler) handlerError(err error, w http.ResponseWriter) {
 	var (
 		code    int
 		message string
@@ -82,7 +86,7 @@ func (h handler) handlerError(log logger.Logger, err error, w http.ResponseWrite
 	case errors.Is(err, ErrTooMuchUrls):
 		code = http.StatusRequestEntityTooLarge
 		message = fmt.Sprintf("Max array size is %d", maxUrlsSize)
-	case errors.Is(err, ErrDecodeBody):
+	case errors.Is(err, ErrEmptyUrls), errors.Is(err, ErrDecodeBody):
 		code = http.StatusBadRequest
 		message = http.StatusText(http.StatusBadRequest)
 	default:
@@ -90,6 +94,5 @@ func (h handler) handlerError(log logger.Logger, err error, w http.ResponseWrite
 		message = http.StatusText(http.StatusInternalServerError)
 	}
 
-	log.Error("handle error: %v", err)
 	http.Error(w, message, code)
 }

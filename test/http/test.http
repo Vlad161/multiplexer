@@ -10,6 +10,12 @@ Content-Type: application/json
   "http://jsonplaceholder.typicode.com/posts/5"
 ]
 
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
 ### Last url is invalid
 POST {{ multiplexer }}/multiplexer
 Content-Type: application/json
@@ -21,3 +27,9 @@ Content-Type: application/json
   "http://jsonplaceholder.typicode.com/posts/4",
   "http://jsonplaceholder123.typicode.com/posts/5"
 ]
+
+> {%
+client.test("Request executed successfully, expected code 500", function() {
+  client.assert(response.status === 500, "Response status is not 500");
+});
+%}
