@@ -13,7 +13,7 @@ func WithClient(cl Client) Option {
 
 func WithDefaultClient() Option {
 	return func(s *service) error {
-		cl, err := client.New(client.WithDefaultHttpClient())
+		cl, err := client.New(client.WithDefaultTransport())
 		if err != nil {
 			return err
 		}

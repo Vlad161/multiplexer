@@ -10,7 +10,7 @@ import (
 )
 
 type service struct {
-	http *http.Client
+	transport Transport
 }
 
 func New(opts ...Option) (*service, error) {
@@ -25,8 +25,8 @@ func New(opts ...Option) (*service, error) {
 		}
 	}
 
-	if s.http == nil {
-		return nil, fmt.Errorf("http client is nil")
+	if s.transport == nil {
+		return nil, fmt.Errorf("http transport is nil")
 	}
 
 	return s, nil
@@ -40,7 +40,7 @@ func (s service) Get(ctx context.Context, url string) (map[string]interface{}, e
 		return nil, errNewRequest
 	}
 
-	resp, errDo := s.http.Do(req)
+	resp, errDo := s.transport.Do(req)
 	if errDo != nil {
 		return nil, errDo
 	}
@@ -49,6 +49,9 @@ func (s service) Get(ctx context.Context, url string) (map[string]interface{}, e
 			log.Error("can't close response body: %v", errCloseBody)
 		}
 	}()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code is %v", resp.StatusCode)
+	}
 
 	var respBody map[string]interface{}
 	if errDecode := json.NewDecoder(resp.Body).Decode(&respBody); errDecode != nil {

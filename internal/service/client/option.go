@@ -11,16 +11,16 @@ const (
 
 type Option func(*service) error
 
-func WithHttpClient(cl *http.Client) Option {
+func WithTransport(t Transport) Option {
 	return func(s *service) error {
-		s.http = cl
+		s.transport = t
 		return nil
 	}
 }
 
-func WithDefaultHttpClient() Option {
+func WithDefaultTransport() Option {
 	return func(s *service) error {
-		s.http = &http.Client{
+		s.transport = &http.Client{
 			Timeout: DefaultTimeout,
 		}
 		return nil
