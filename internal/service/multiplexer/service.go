@@ -63,10 +63,16 @@ func (s service) Urls(ctx context.Context, urls []string) (Result, error) {
 	return result, nil
 }
 
-func (s service) visitUrls(ctx context.Context, urls []string, done <-chan struct{}) (kv <-chan keyValue, err <-chan error) {
+func (s service) visitUrls(ctx context.Context, urls []string, done <-chan struct{}) (<-chan keyValue, <-chan error) {
 	sem := make(chan struct{}, semaphoreMaxGoroutines)
 	kvChan := make(chan keyValue)
 	errChan := make(chan error)
+	terminate := false
+
+	go func() {
+		<-done
+		terminate = true
+	}()
 
 	go func() {
 		var wg sync.WaitGroup
@@ -77,10 +83,8 @@ func (s service) visitUrls(ctx context.Context, urls []string, done <-chan struc
 			go func(url string) {
 				r, errDo := s.client.Get(ctx, url)
 
-				select {
-				case <-done:
-					// Ignore result if done was closed
-				default:
+				// Ignore result if terminate required
+				if !terminate {
 					if errDo != nil {
 						errChan <- errDo
 					} else {
@@ -92,12 +96,9 @@ func (s service) visitUrls(ctx context.Context, urls []string, done <-chan struc
 				wg.Done()
 			}(u)
 
-			// Abort cycle if done was called
-			select {
-			case <-done:
+			// Abort if terminate required
+			if terminate {
 				return
-			default:
-				// do nothing
 			}
 		}
 
