@@ -49,7 +49,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.handlerError(errHandle, w)
+	h.handlerError(log, errHandle, w)
 	return
 }
 
@@ -76,7 +76,7 @@ func (h handler) handle(ctx context.Context, body io.ReadCloser) (response, erro
 	return h.multiplexer.Urls(ctx, urls)
 }
 
-func (h handler) handlerError(err error, w http.ResponseWriter) {
+func (h handler) handlerError(log logger.Logger, err error, w http.ResponseWriter) {
 	var (
 		code    int
 		message string
@@ -94,5 +94,6 @@ func (h handler) handlerError(err error, w http.ResponseWriter) {
 		message = http.StatusText(http.StatusInternalServerError)
 	}
 
+	log.Error("handler error: %v", err)
 	http.Error(w, message, code)
 }

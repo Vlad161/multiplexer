@@ -41,6 +41,9 @@ func New(opts ...Option) (*service, error) {
 }
 
 func (s service) Urls(ctx context.Context, urls []string) (Result, error) {
+	ctxCancel, cancelCtx := context.WithCancel(ctx)
+	defer cancelCtx()
+
 	result := make(map[string]map[string]interface{}, len(urls))
 	done := make(chan struct{})
 	defer close(done)
@@ -53,10 +56,11 @@ func (s service) Urls(ctx context.Context, urls []string) (Result, error) {
 			result[kv.key] = kv.value
 		case err := <-errChan:
 			done <- struct{}{}
+			cancelCtx()
 			return nil, err
-		case <-ctx.Done():
+		case <-ctxCancel.Done():
 			done <- struct{}{}
-			return nil, ctx.Err()
+			return nil, ctxCancel.Err()
 		}
 	}
 

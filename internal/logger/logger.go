@@ -20,7 +20,7 @@ func (l logger) Info(format string, a ...interface{}) {
 
 func (l logger) Error(format string, a ...interface{}) {
 	_, _ = io.WriteString(os.Stderr, fmt.Sprintf(format, a...))
-	_, _ = io.WriteString(os.Stdout, "\n")
+	_, _ = io.WriteString(os.Stderr, "\n")
 }
 
 func (l logger) Fatal(format string, a ...interface{}) {
